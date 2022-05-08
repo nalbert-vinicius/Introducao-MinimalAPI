@@ -20,13 +20,35 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapGet("/", () => "Olá mundo");
 
-app.Run();
 
 app.MapGet("/tarefas", async (AppDbContext db) =>
 {
     return await db.Tarefas.ToListAsync();
+});
+
+app.MapGet("/tarefas/{id}", async (int id, AppDbContext db) =>{
+    var tarefas = await db.Tarefas.FirstOrDefaultAsync(t => t.Id == id);
+    if (tarefas != null) {
+        return Results.Ok(tarefas);
+    }
+    else
+    {
+        return Results.NotFound();
+    }
+});
+
+app.MapGet("/tarefas/concluida", async (AppDbContext db) =>
+{
+    var tarefas = await db.Tarefas.FirstOrDefaultAsync(t => t.IsConcluido == true);
+    if (tarefas != null)
+    {
+        return Results.Ok(tarefas);
+    }
+    else
+    {
+        return Results.NotFound();
+    }
 });
 
 app.MapPost("/tarefas", async (Tarefa tarefa, AppDbContext db) =>
@@ -35,6 +57,8 @@ app.MapPost("/tarefas", async (Tarefa tarefa, AppDbContext db) =>
     await db.SaveChangesAsync();
     return Results.Created($"/tarefas/{ tarefa.Id }", tarefa);
 });
+
+app.Run();
 
 class Tarefa
 {
