@@ -40,7 +40,7 @@ class Tarefa
 {
     public int Id { get; set; }
     public string? Nome { get; set; }
-    public bool IsConcluida { get; set; }
+    public bool IsConcluido { get; set; }
 }
 
 class AppDbContext : DbContext
